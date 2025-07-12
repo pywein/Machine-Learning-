@@ -1,3 +1,4 @@
+#Done in RStudio 12/2019
 #Creates training set at 75% for LASSO (Least Absolute Shrinkage and Selection Operator)analysis
 #NOTE: Ridge regression when alpha=0, Lasso when alpha=1, Elastic Net when alpha=.99
 
