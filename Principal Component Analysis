@@ -1,0 +1,86 @@
+#Creates training set at 75% for LASSO (Least Absolute Shrinkage and Selection Operator)analysis
+#NOTE: Ridge regression when alpha=0, Lasso when alpha=1, Elastic Net when alpha=.99
+
+rowSelectLasso<-sample(1:nrow(dataV1),nrow(dataV1)*.75,replace=F)
+dataTrainLasso<-dataV1[rowSelectLasso,]
+dataTestLasso<-dataV1[-rowSelectLasso,]
+
+
+#creates principle component analysis/dimension reduction of FreeSurfer Structural MRI dats
+
+#whole PCA baseline, sep value for each line 
+dataW.pcaOutput<-as.data.frame(predict(dataW.pca, newdata = dataV1)[,1:78]) 
+
+#saves all 78 components as a dataframe
+str(dataW.pcaOutput) 
+
+#whole PCA visit 2, sep value for each line 
+dataW2.pcaOutput<-as.data.frame(predict(dataW2.pca, newdata = dataV2)[,1:78]) 
+
+#saves all 78 components as a dataframe
+str(dataW2.pcaOutput) 
+
+dataW.pcaOutput<-as.data.frame(predict(dataW.pca, newdata = dataVol)[,1:78])
+colnames(dataW.pcaOutput)<-c("W1","W2","W3","W4","W5","W6","W7","W8","W9","W10",
+                             "W11","W12","W13","W14","W15","W16","W17","W18","W19","W20",
+                             "W21","W22","W23","W24","W25","W26","W27","W28","W29","W30",
+                             "W13","W32","W33","W34","W35","W36","W37","W38","W39","W40",
+                             "W41","W42","W43","W44","W45","W46","W47","W48","W49","W50",
+                             "W51","W52","W53","W54","W55","W56","W57","W58","W59","W60",
+                             "W61","W62","W63","W64","W65","W66","W67","W68","W69","W70",
+                             "W71","W72","W73","W74","W75","W76","W77","W78") #creates column names
+
+dataW.pcaOutput<-bind_cols(dataV1,X_10_YEAR_ASCVD)
+dataW.pcaOutput<-bind_cols(dataW.pcaOutput,dataV1[,"X_10_YEAR_ASCVD"])
+dataV1<-bind_cols(dataV1,dataW.pcaOutput)
+dataLasso1
+
+all.equal(dataW.pcaOutput$W1,dataLasso1$W110)
+
+colnames(dataVol)
+colnames(dataV1)
+
+dataLassoV1<-bind
+
+#Conduct LASSO on traing set 
+x_varsLasso <- model.matrix(dataTrainLasso$X_10_YEAR_ASCVD~. , dataW.pcaOutput)[,-1]
+y_varLasso <- dataTrainLasso$X_10_YEAR_ASCVD
+
+# identifying best lamda
+#best_lamLasso <- cv_outputLasso$lambda.min
+
+fit.lambda<-glmnet(X.ifa,Y,alpha=1,lambda=0.01,family="binomial")
+fit.lambda$beta
+fit.lambda$df
+fit.lambda$a0
+coef(fit.lambda)
+mean(ifastest$On.Team.List)
+
+ASCVDLassoX<- model.matrix(dataTrainLasso$X_10_YEAR_ASCVD~., data=dataTrainLasso)
+ASCVDLassoY<- dataTrainLasso$X_10_YEAR_ASCVD
+fit.lambda.cv<-cv.glmnet(ASCVDLassoX,ASCVDLassoY,alpha=0,nfolds=10)
+min(fit.lambda.cv$lambda) 
+
+#plots
+plot(fit.lambdaASCVD, xvar="lambda")
+plot(fit.lambda.cv, xvar="lambda")
+plot(fit10, main="LASSO")
+
+colnames(dataV1)
+
+op <- par(mfrow=c(1, 2))
+plot(fit.lambdaASCVD$glmnet.fit, "norm",   label=TRUE)
+plot(fit.lambdaASCVD$glmnet.fit, "lambda", label=TRUE)
+par(op)
+
+fit.lambda.cv<-cv.glmnet(ASCVDLassoX,ASCVDLassoY,alpha=0,nfolds=10, family="gaussian")
+fit.lambdaASCVD<-glmnet(ASCVDLassoX,ASCVDLassoY,alpha=1,lambda=17.42394,family="gaussian") 
+fit.lambdaASCVD$beta
+
+#Obtains summary
+summary(fit.lambda.cv$lambda)
+
+
+
+
+
